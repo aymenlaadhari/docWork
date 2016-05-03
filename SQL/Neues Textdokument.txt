@@ -1,0 +1,55 @@
+SELECT
+Artikel.Nr,
+Preisstaffel_EK.Bestell_nr,
+Artikel.Bezeichnung,
+Preisstaffel_EK.Farb_Nr,
+Farbstaffel.Bezeichnung,
+Preisstaffel_EK.Groesse
+FROM Preisstaffel_EK, Artikel, Farbstaffel
+where lieferant_nr = '700075'
+AND Preisstaffel_EK.At_ID = Artikel.ID
+AND Farbstaffel.Nr = Preisstaffel_EK.Farb_Nr
+order by 1,4,6
+
+
+#Offne Bestellungen#
+
+SELECT
+Bestellung.nr AS 'BestNr',
+Bestell_Position.positons_nr AS 'Pos',
+Bestell_positionsgroessen.Positions_Nr AS 'GrPos',
+Bestell_Position.artikel_nr AS 'ArtNr',
+Bestell_positionsgroessen.lf_at_nr AS 'LiefArtNr',
+Artikel.Bezeichnung AS 'ArtiklText',
+Bestell_Position.farb_nr AS 'FarbNr',
+Farbstaffel.Bezeichnung AS 'FarbText',
+Bestell_positionsgroessen.groesse AS 'GR',
+Bestell_positionsgroessen.bestellmenge AS 'BestMeng',
+Bestell_positionsgroessen.liefermenge AS 'LieferMeng',
+Bestell_positionsgroessen.bestellmenge - Bestell_positionsgroessen.liefermenge AS 'OffMeng',
+Bestell_positionsgroessen.Lieferdatum_von AS 'Von',
+Bestell_positionsgroessen.Lieferdatum_bis AS 'Bis',
+CAST (YEAR(Bestell_positionsgroessen.Lieferdatum_von)*100 + (datename(cwk, Bestell_positionsgroessen.Lieferdatum_von)) AS INTEGER) AS 'J/W_von',
+CAST (YEAR(Bestell_positionsgroessen.Lieferdatum_bis)*100 + (datename(cwk, Bestell_positionsgroessen.Lieferdatum_bis)) AS INTEGER) AS 'J/W_bis'
+
+FROM Bestellung, Bestell_Position, Bestell_positionsgroessen, Artikel, Farbstaffel where Bestell_positionsgroessen.posi_id = Bestell_Position.id
+AND Bestell_Position.Bestellungs_id = Bestellung.id AND Bestellung.Lieferanten_nr = 700075
+AND Bestellung.archiviert = 'N' and Bestell_positionsgroessen.archiviert = 'N'
+AND Bestell_Position.artikel_nr = Artikel.NR
+AND Bestell_Position.farb_nr = Farbstaffel.Nr
+AND Bestell_positionsgroessen.bestellmenge > 0
+AND Bestell_positionsgroessen.bestellmenge > Bestell_positionsgroessen.liefermenge
+
+
+
+#SUMM IF#
+
+=SUMMEWENN(Daten!$B:$B;"A"&$B12&Daten!&$E12&"G"&$G12&"W"&I$1;Daten!B2)
+
+
+
+
+
+
+
+ String dburl = "jdbc:sqlanywhere:uid=dba;pwd=sql;eng=DBSRV5;database=Produkt5;links=tcpip(host = 10.152.1.203)";
